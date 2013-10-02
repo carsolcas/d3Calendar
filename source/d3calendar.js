@@ -17,9 +17,9 @@ var Day = (function(y,m,d){
       num = num + '';
       return num.length >= width ? num : new Array(width - num.length + 1).join(char) + num;
     }
-    
+
     return{
-        getDate:function(){return day;},
+        getDate:function(){return day;},  //Return Date object
         getDay:function(){return day.getDate();},
         getMonth:function(){return day.getMonth()+1;},
         getYear:function(){return day.getFullYear();},
@@ -46,7 +46,7 @@ var Day = (function(y,m,d){
            return _week;
            
         },
-        add:function(days){
+        add:function(days){  //Add days to atual day. Negative numbers allowed to past days. Return new instance Day
             return Day(this.getYear(), this.getMonth(), this.getDay()+days);
         },
         toString:function(){return lpad(this.getDay(),2)+'/'+lpad(this.getMonth(),2)+'/'+this.getYear();},
