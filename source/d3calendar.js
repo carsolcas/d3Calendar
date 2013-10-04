@@ -1,16 +1,37 @@
+//Add each function to Array Object
+
+if (!Array.prototype.each){
+    Array.prototype.each = function(callback){
+        if (!callback) return;
+
+        for (var i=0; i<this.length; i++){
+            if (typeof this[i] === 'object' )
+                callback.call(this[i], i);
+            else
+                callback(this[i], i);
+        }
+        return true;
+    }
+}
+
 var Day = (function(y,m,d){
     var day = 0;
 
-    if (m == undefined){ //One parameter string with data 11/10/2013 or 11-10-2013
+    //no params --> today
+    if (y == undefined) day = new Date();
+    
+    //One parameter string with data 11/10/2013 or 11-10-2013
+    else if (m == undefined){ 
         var p_date = y;
         if(p_date.match(/\//)) p_date = p_date.replace(/\//g,"-",p_date);
         p_date = p_date.split("-");
         day = new Date(eval(p_date[2]), eval(p_date[1])-1, eval(p_date[0]) );
     }
-    else if (d == undefined) //if third parameter is null then params: year, week number of year
-        day = new Date(y, 0, 1 + (m - 1) * 7);
-    else  //normal parameters
-        day = new Date(y, m-1, d);
+    //if third parameter is null then params: year, week number of year
+    else if (d == undefined) day = new Date(y, 0, 1 + (m - 1) * 7);
+
+    //normal parameters
+    else day = new Date(y, m-1, d);
 
     function lpad(num, width, char) {
       char = char || '0';
@@ -18,13 +39,7 @@ var Day = (function(y,m,d){
       return num.length >= width ? num : new Array(width - num.length + 1).join(char) + num;
     }
 
-    return{
-        getDate:function(){return day;},  //Return Date object
-        getDay:function(){return day.getDate();},
-        getMonth:function(){return day.getMonth()+1;},
-        getYear:function(){return day.getFullYear();},
-        getDayOfWeek:function(){return (day.getDay() == 0) ? 7 : day.getDay();},
-        getWeekOfYear:function(){
+    function getWeekOfYear(){
             var month = day.getMonth(),
             _y = (month == 0 || month == 1) ? day.getFullYear()-1 : day.getFullYear(),
             _b = Math.floor(_y/4)-Math.floor(_y/100)+Math.floor(_y/400),
@@ -45,7 +60,15 @@ var Day = (function(y,m,d){
               _week = Math.floor(_n/7)+1;
            return _week;
            
-        },
+        }
+
+    return{
+        getDate:function(){return day;},  //Return Date object
+        getDay:function(){return day.getDate();},
+        getMonth:function(){return day.getMonth()+1;},
+        getYear:function(){return day.getFullYear();},
+        getDayOfWeek:function(){return (day.getDay() == 0) ? 7 : day.getDay();},
+        getWeekOfYear:getWeekOfYear,
         add:function(days){  //Add days to atual day. Negative numbers allowed to past days. Return new instance Day
             return Day(this.getYear(), this.getMonth(), this.getDay()+days);
         },
@@ -53,54 +76,86 @@ var Day = (function(y,m,d){
         toURI:function(){return encodeURIComponent(this.getYear()+'-'+lpad(this.getMonth(),2)+'-'+lpad(this.getDay(),2));}
     }
 });
-   
+
+
 var Week = (function(y,m,d){
     var day = 0,
-        week = [];
-    day = Day(y,m,d);
-    
+        week = [],
+        numWeek = 0;
+
+    day = (typeof y === 'object') ? y : Day(y,m,d);
+
+    var dayOfWeek = day.getDayOfWeek();
+    for (var i=1; i<=7; i++){
+        week.push(day.add( i-dayOfWeek ));
+    }
+        
  return {
-    getWeekDays:function(){
-        var dayOfWeek = day.getDayOfWeek(),
-            offset = 0;
-            week = new Array();
-        for (var i=1; i<=7; i++){
-            offset = i-dayOfWeek;
-            week.push(Day(day.getYear(), day.getMonth(), day.getDay()+offset));
-        }
-        return this;
-    },
-    toArray:function(){
+    getWeekDays:function(){return week;},
+    each:function(callback){return week.each(callback);},
+    getDays:function(){
         var w = new Array(),
             days = week.length;
         for(var i=0; i<days; i++) w[i] = week[i].getDay();
         return w;
     },
     firstDay:function(){return (week.length>0) ? week[0] : undefined;},
-    lastDay:function(){return (week.length>0) ? week[6] : undefined;}
+    lastDay:function(){return (week.length>0) ? week[6] : undefined;},
+    getWeekOfYear:function(){
+        return (numWeek == 0) ? numWeek = day.getWeekOfYear() : numWeek;
+    }
  };
 });
 
-var Calendar = function(year, month, day){
-    this.date = new Date(year, month-1, day);
-}
 
-Calendar.prototype ={
-    getDay:function(){return this.date.getDate();},
-    getMonth:function(){return this.date.getMonth()+1;},
-    getYear:function(){return this.date.getFullYear();},
-    getDayOfWeek:function(){
-        return (this.date.getDay() == 0) ? 7 : this.date.getDay();
-    },
-    getActualWeek:function(offsetWeek){
-        var dayOfWeek = this.getDayOfWeek(),
-            week = new Array(),
-            offset = 0;
-        for (var i=1; i<=7; i++){
-            offset = i-dayOfWeek;
-            var d = new Date(this.getYear(), this.date.getMonth(), this.getDay()+offset).getDate();
-            week.push(d);
+var Calendar = (function(options){
+    var defaults = {
+            numWeeks: 4,
+            firstDayOfWeek: 'M'
+        },
+        settings = {},
+        weeks = new Array(),
+        day = Day();
+        $.extend(settings, defaults, options);
+
+        function _calculateWeeks(){
+            weeks = new Array();
+            var year = day.getYear(),
+                nw = day.getWeekOfYear();
+            for (var i=0; i< settings.numWeeks; i++){
+                weeks.push(Week(year,nw-i));
+            }
+            weeks.reverse();
         }
-        return week;
-    }
-}
+
+        _calculateWeeks();
+        
+ return {
+        getNumWeeks:function(){return settings.numWeeks;},
+        setDay:function(y,m,d){ day = Day(y,m,d); _calculateWeeks(); return this;},
+        getDay:function(d){ return day;},
+        getWeeks:function(){return weeks;},
+        each:function(callback){return weeks.each(callback);},
+        movePrevWeek:function(){
+            var tmp = new Array();
+            tmp.push(Week(this.firstDay().add(-7)));
+            weeks = tmp.concat(weeks.slice(0,-1));
+            return this;
+        },
+        moveNextWeek:function(){
+            weeks = weeks.slice(1);
+            weeks.push(Week(this.lastDay().add(7)));
+
+            return this;
+        },
+        firstDay:function(){return (weeks.length>0) ? weeks[0].firstDay() : undefined;},
+        lastDay:function(){return (weeks.length>0) ? weeks[weeks.length-1].lastDay() : undefined;},
+        toString:function(){
+            weeks.each(function(){
+                var week = '';
+                this.each(function(){week += this.getDay()+ ' ';});
+                console.log(week);
+                });
+        }
+    };
+});
