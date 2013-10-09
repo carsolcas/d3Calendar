@@ -226,6 +226,7 @@ var D3Calendar = (function(container){
               .attr("font-size", "12px")
               .attr("text-anchor", "middle")
               .attr("fill","#666666")
+              .style("pointer-events", "none")
               ;
         });
         //Header weekdays
@@ -254,6 +255,7 @@ var D3Calendar = (function(container){
           .attr("font-size", "13px")
           .attr("text-anchor", "middle")
           .attr("fill","#666666")
+          .style("pointer-events", "none")
           ;
     }
  };
