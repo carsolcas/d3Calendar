@@ -175,22 +175,6 @@ var D3Calendar = (function(container){
             weeks = calendar.getWeeks(),
             square = 20;
 
-        //~ d3Canvas.append("svg:rect").
-          //~ attr("x", 0).
-          //~ attr("y", 0).
-          //~ attr("height", numWeeks*(square+2)).
-          //~ attr("width", 7*(square+2)).
-          //~ attr("fill", "#999").
-          //~ attr("transform", "translate(100,100)");
-//~
-        //~ d3Canvas.append("svg:rect").
-          //~ attr("x", 2).
-          //~ attr("y", 2).
-          //~ attr("height", (numWeeks*(square+2))-4).
-          //~ attr("width", (7*(square+2))-4).
-          //~ attr("fill", "#ccc").
-          //~ attr("transform", "translate(100,100)");
-
         weeks.each(function(i){
             var yDay = (i * (square+2)),
                 days = this.getWeekDays();
@@ -205,7 +189,11 @@ var D3Calendar = (function(container){
               .attr("width", square)
               .attr("fill", "#F6F6F6")
               .attr("transform", "translate(100,100)")
-              .attr("class", "daycell")
+              .attr("class",function(d){ return (d.getDay() % 2 == 0) ? "True" : "";})
+              .classed("daycell","true")
+              .on('click',function(d){
+                    console.log(d.getDay());
+                  })
               ;
         });
 
