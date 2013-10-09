@@ -19,9 +19,9 @@ var Day = (function(y,m,d){
 
     //no params --> today
     if (y == undefined) day = new Date();
-    
+
     //One parameter string with data 11/10/2013 or 11-10-2013
-    else if (m == undefined){ 
+    else if (m == undefined){
         var p_date = y;
         if(p_date.match(/\//)) p_date = p_date.replace(/\//g,"-",p_date);
         p_date = p_date.split("-");
@@ -47,11 +47,11 @@ var Day = (function(y,m,d){
             _s = _b - _c,
             _e = (month == 0 || month == 1) ? 0 : _s+1,
             _f = (month == 0 || month == 1) ? (day.getDate()-1 + (31 * month)) : day.getDate()+Math.floor(((153*(day.getMonth()-2))+2)/5)+58+_s;
-        
+
            _g = (_y + _b)%7;
            _d = (_f + _g - _e)%7;
            _n = _f + 3 - _d;
-           
+
            if (_n < 0)
               week =   53 - Math.floor((_g - _s) / 5);
            else if (_n>(364 + _s))
@@ -59,7 +59,7 @@ var Day = (function(y,m,d){
            else
               _week = Math.floor(_n/7)+1;
            return _week;
-           
+
         }
 
     return{
@@ -89,7 +89,7 @@ var Week = (function(y,m,d){
     for (var i=1; i<=7; i++){
         week.push(day.add( i-dayOfWeek ));
     }
-        
+
  return {
     getWeekDays:function(){return week;},
     each:function(callback){return week.each(callback);},
@@ -129,7 +129,7 @@ var Calendar = (function(options){
         }
 
         _calculateWeeks();
-        
+
  return {
         getNumWeeks:function(){return settings.numWeeks;},
         setDay:function(y,m,d){ day = Day(y,m,d); _calculateWeeks(); return this;},
@@ -158,4 +158,103 @@ var Calendar = (function(options){
                 });
         }
     };
+});
+
+
+var D3Calendar = (function(container){
+    var calendar = Calendar(),
+        daysOfWeek = ['L','M','X','J','V','S','D'],
+        d3Canvas = d3.select("#"+container).
+                      append("svg:svg").
+                      attr("width", 400).
+                      attr("height", 300);
+ return {
+    setDay: function(y,m,d){ calendar = Calendar().setDay(y,m,d);},
+    display:function(){
+        var numWeeks = calendar.getNumWeeks(),
+            weeks = calendar.getWeeks(),
+            square = 20;
+
+        //~ d3Canvas.append("svg:rect").
+          //~ attr("x", 0).
+          //~ attr("y", 0).
+          //~ attr("height", numWeeks*(square+2)).
+          //~ attr("width", 7*(square+2)).
+          //~ attr("fill", "#999").
+          //~ attr("transform", "translate(100,100)");
+//~
+        //~ d3Canvas.append("svg:rect").
+          //~ attr("x", 2).
+          //~ attr("y", 2).
+          //~ attr("height", (numWeeks*(square+2))-4).
+          //~ attr("width", (7*(square+2))-4).
+          //~ attr("fill", "#ccc").
+          //~ attr("transform", "translate(100,100)");
+
+        weeks.each(function(i){
+            var yDay = (i * (square+2)),
+                days = this.getWeekDays();
+
+            d3Canvas.selectAll("week"+i)
+              .data(days)
+              .enter()
+              .append("svg:rect")
+              .attr("x", function(datum, index) { return (index*(square+2)); })
+              .attr("y", yDay)
+              .attr("height", square)
+              .attr("width", square)
+              .attr("fill", "#F6F6F6")
+              .attr("transform", "translate(100,100)")
+              .attr("class", "daycell")
+              ;
+        });
+
+        //TEXT
+        weeks.each(function(i){
+            var yDay = (i * (square+2)),
+                days = this.getWeekDays();
+            d3Canvas.selectAll("text"+i)
+              .data(days)
+              .enter()
+              .append("text")
+              .text(function(d) {
+                    return d.getDay();
+               })
+              .attr("x", function(datum, index) { return (index*(square+2))+(square/2); })
+              .attr("y", yDay+13)
+              .attr("transform", "translate(100,100)")
+              .attr("font-size", "12px")
+              .attr("text-anchor", "middle")
+              .attr("fill","#666666")
+              ;
+        });
+        //Header weekdays
+        var yDay = 0
+        d3Canvas.selectAll("headerWeek")
+          .data(daysOfWeek)
+          .enter()
+          .append("svg:rect")
+          .attr("x", function(datum, index) { return (index*(square+2)); })
+          .attr("y", yDay)
+          .attr("height", square)
+          .attr("width", square)
+          .attr("fill", "#BBBBBB")
+          .attr("transform", "translate(100,80)")
+          .attr("class", "daycell")
+          ;
+
+        d3Canvas.selectAll("textH")
+          .data(daysOfWeek)
+          .enter()
+          .append("text")
+          .text(function(d) {return d;})
+          .attr("x", function(datum, index) { return (index*(square+2))+(square/2); })
+          .attr("y", yDay+15)
+          .attr("transform", "translate(100,80)")
+          .attr("font-size", "13px")
+          .attr("text-anchor", "middle")
+          .attr("fill","#666666")
+          ;
+    }
+ };
 });
