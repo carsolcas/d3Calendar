@@ -41,16 +41,17 @@ var Day = (function(y,m,d){
 
     function getWeekOfYear(){
             var month = day.getMonth(),
-            _y = (month == 0 || month == 1) ? day.getFullYear()-1 : day.getFullYear(),
-            _b = Math.floor(_y/4)-Math.floor(_y/100)+Math.floor(_y/400),
-            _c = Math.floor((_y-1)/4)-Math.floor((_y-1)/100)+Math.floor((_y-1)/400),
-            _s = _b - _c,
-            _e = (month == 0 || month == 1) ? 0 : _s+1,
-            _f = (month == 0 || month == 1) ? (day.getDate()-1 + (31 * month)) : day.getDate()+Math.floor(((153*(day.getMonth()-2))+2)/5)+58+_s;
+                _y = (month == 0 || month == 1) ? day.getFullYear()-1 : day.getFullYear(),
+                _b = Math.floor(_y/4)-Math.floor(_y/100)+Math.floor(_y/400),
+                _c = Math.floor((_y-1)/4)-Math.floor((_y-1)/100)+Math.floor((_y-1)/400),
+                _s = _b - _c,
+                _e = (month == 0 || month == 1) ? 0 : _s+1,
+                _f = (month == 0 || month == 1) ? (day.getDate()-1 + (31 * month)) : day.getDate()+Math.floor(((153*(day.getMonth()-2))+2)/5)+58+_s;
 
-           _g = (_y + _b)%7;
-           _d = (_f + _g - _e)%7;
-           _n = _f + 3 - _d;
+           var _g = (_y + _b)%7,
+               _d = (_f + _g - _e)%7,
+               _n = _f + 3 - _d,
+               _week;
 
            if (_n < 0)
               week =   53 - Math.floor((_g - _s) / 5);
@@ -59,7 +60,6 @@ var Day = (function(y,m,d){
            else
               _week = Math.floor(_n/7)+1;
            return _week;
-
         }
 
     return{
@@ -68,6 +68,11 @@ var Day = (function(y,m,d){
         getMonth:function(){return day.getMonth()+1;},
         getYear:function(){return day.getFullYear();},
         getDayOfWeek:function(){return (day.getDay() == 0) ? 7 : day.getDay();},
+        isEqual:function(d){
+            return ((d.getDay() == this.getDay()) && (d.getMonth() == this.getMonth()) &&  (d.getYear() == this.getYear()));
+        },
+        isGreaterThan:function(d){ return ( !this.isEqual(d) && this.getDate() > d.getDate()); },
+        isLowerThan:function(d){return (!this.isEqual(d) &&  this.getDate() < d.getDate()); },
         getWeekOfYear:getWeekOfYear,
         add:function(days){  //Add days to atual day. Negative numbers allowed to past days. Return new instance Day
             return Day(this.getYear(), this.getMonth(), this.getDay()+days);
@@ -101,6 +106,14 @@ var Week = (function(y,m,d){
     },
     firstDay:function(){return (week.length>0) ? week[0] : undefined;},
     lastDay:function(){return (week.length>0) ? week[6] : undefined;},
+    hasDay:function(day){
+        var first = this.firstDay(),
+            last = this.lastDay();
+        return (day.isGreaterThan(first) && day.isLowerThan(last))
+                || day.isEqual(first)
+                || day.isEqual(last);
+
+    },
     getWeekOfYear:function(){
         return (numWeek == 0) ? numWeek = day.getWeekOfYear() : numWeek;
     }
@@ -170,6 +183,11 @@ var D3Calendar = (function(container){
                       attr("height", 300);
  return {
     setDay: function(y,m,d){ calendar = Calendar().setDay(y,m,d);},
+    setData:function(data){
+        data.each(function(){
+
+        });
+    },
     display:function(){
         var numWeeks = calendar.getNumWeeks(),
             weeks = calendar.getWeeks(),
