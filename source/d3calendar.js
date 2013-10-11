@@ -15,7 +15,8 @@ if (!Array.prototype.each){
 }
 
 var Day = (function(y,m,d){
-    var day = 0;
+    var day = 0,
+        data;
 
     //no params --> today
     if (y == undefined) day = new Date();
@@ -68,11 +69,21 @@ var Day = (function(y,m,d){
         getMonth:function(){return day.getMonth()+1;},
         getYear:function(){return day.getFullYear();},
         getDayOfWeek:function(){return (day.getDay() == 0) ? 7 : day.getDay();},
+        getData: function(){ return data;},
+        setData: function(d){
+            if (data === undefined) data = d;
+            else{
+                data.left += d.left;
+                data.right += d.right;
+            }
+            return this;
+        },
         isEqual:function(d){
             return ((d.getDay() == this.getDay()) && (d.getMonth() == this.getMonth()) &&  (d.getYear() == this.getYear()));
         },
         isGreaterThan:function(d){ return ( !this.isEqual(d) && this.getDate() > d.getDate()); },
         isLowerThan:function(d){return (!this.isEqual(d) &&  this.getDate() < d.getDate()); },
+        getDaysTo: function(d){ return (d.getDate() - this.getDate()) / (86400000) },
         getWeekOfYear:getWeekOfYear,
         add:function(days){  //Add days to atual day. Negative numbers allowed to past days. Return new instance Day
             return Day(this.getYear(), this.getMonth(), this.getDay()+days);
@@ -96,17 +107,18 @@ var Week = (function(y,m,d){
     }
 
  return {
-    getWeekDays:function(){return week;},
-    each:function(callback){return week.each(callback);},
+    getWeekDays: function(){return week;},
+    each: function(callback){return week.each(callback);},
     getDays:function(){
         var w = new Array(),
             days = week.length;
         for(var i=0; i<days; i++) w[i] = week[i].getDay();
         return w;
     },
-    firstDay:function(){return (week.length>0) ? week[0] : undefined;},
-    lastDay:function(){return (week.length>0) ? week[6] : undefined;},
-    hasDay:function(day){
+    getDay: function(i){return (week.length>0 && i < 7 && i >= 0) ? week[i] : undefined;},
+    firstDay: function(){return this.getDay(0); },
+    lastDay: function(){return this.getDay(6); },
+    hasDay: function(day){
         var first = this.firstDay(),
             last = this.lastDay();
         return (day.isGreaterThan(first) && day.isLowerThan(last))
@@ -114,8 +126,19 @@ var Week = (function(y,m,d){
                 || day.isEqual(last);
 
     },
-    getWeekOfYear:function(){
+    getWeekOfYear: function(){
         return (numWeek == 0) ? numWeek = day.getWeekOfYear() : numWeek;
+    },
+    getTotalsWeek: function(){
+        var total = {left:0, right:0};
+        week.each(function(){
+            var data = this.getData();
+            if (data){
+                total.left += data.left;
+                total.right += data.right;
+            }
+        });
+        return total;
     }
  };
 });
@@ -146,7 +169,17 @@ var Calendar = (function(options){
  return {
         getNumWeeks:function(){return settings.numWeeks;},
         setDay:function(y,m,d){ day = Day(y,m,d); _calculateWeeks(); return this;},
-        getDay:function(d){ return day;},
+        getCalendarDay:function(y,m,d){
+            var day = Day(y,m,d);
+            for (var i=0; i<weeks.length; i++){
+                if (weeks[i].hasDay(day)){
+                    var offset = weeks[i].firstDay().getDaysTo(day);
+                    return weeks[i].getDay(offset);
+                }
+            }
+            return;
+        },
+        getInitialDay:function(){return day;},
         getWeeks:function(){return weeks;},
         each:function(callback){return weeks.each(callback);},
         movePrevWeek:function(){
@@ -183,10 +216,13 @@ var D3Calendar = (function(container){
                       attr("height", 300);
  return {
     setDay: function(y,m,d){ calendar = Calendar().setDay(y,m,d);},
-    setData:function(data){
-        data.each(function(){
+    getDay: function(y,m,d){
 
-        });
+    },
+    setData:function(data){
+        var self = this;
+
+        return self;
     },
     display:function(){
         var numWeeks = calendar.getNumWeeks(),

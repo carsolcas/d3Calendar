@@ -16,6 +16,10 @@ test( "Week of the Year", function() {
     deepEqual( Week('30/07/2013').getDays(), jul_week, "July 2013. String date!" );
     ok(Week('01/10/2013').getWeekOfYear() == 40, 'week of year');
 
+    ok(Week('01/10/2013').firstDay().toString() == '30/09/2013', 'First day of week');
+    ok(Week('01/10/2013').lastDay().toString() == '06/10/2013', 'Last day of week');
+
+
     ok(Week('01/10/2013').hasDay(Day('02/10/2013')), 'Day is in week');
     ok(Week('01/10/2013').hasDay(Day('06/10/2013')), 'Day is in week. Last Day');
     ok(Week('01/10/2013').hasDay(Day('30/09/2013')), 'Day is in week. First Day');
@@ -56,19 +60,28 @@ test( "Days Test", function() {
     ok( d1.isLowerThan(d1) == false, 'Lower than --> False');
     ok( d1.isLowerThan(d4), 'Lower than --> True');
     ok( d2.isLowerThan(d3), 'Lower than --> True');
+
+    ok( d2.getDaysTo(d4) == 4, 'days to');
+    ok( d4.getDaysTo(d2) == -4, 'days to');
+    ok( d4.getDaysTo(d4) == 0, 'Same day');
 });
 
 
 test( "Calendar Test", function() {
+    var calendar = Calendar().setDay('01/10/2013');
     ok(Calendar().getNumWeeks() == 4, "Default config");
     ok(Calendar({numWeeks:5}).getNumWeeks() == 5, "Parameter Config");
-    ok(Calendar().setDay('01/10/2013').firstDay().toString() == '09/09/2013',"Set Day test");
-    ok(Calendar().setDay('01/10/2013').lastDay().toString() == '06/10/2013',"Set Day test");
+    ok(calendar.firstDay().toString() == '09/09/2013',"Set Day test");
+    ok(calendar.lastDay().toString() == '06/10/2013',"Set Day test");
 
+    ok(calendar.getCalendarDay('12/09/2013').toString() == '12/09/2013',"Set Day test");
+    ok(calendar.getCalendarDay('08/09/2013') === undefined,"Set Day test");
 
-    ok(Calendar().setDay('01/10/2013').moveNextWeek().firstDay().toString() == '16/09/2013',"MoveNextWeek test");
-    ok(Calendar().setDay('01/10/2013').moveNextWeek().lastDay().toString() == '13/10/2013',"MoveNextWeek test");
+    ok(calendar.moveNextWeek().firstDay().toString() == '16/09/2013',"MoveNextWeek test");
+    ok(calendar.lastDay().toString() == '13/10/2013',"MoveNextWeek test");
 
     ok(Calendar().setDay('01/10/2013').movePrevWeek().firstDay().toString() == '02/09/2013',"MovePrevWeek test");
     ok(Calendar().setDay('01/10/2013').movePrevWeek().lastDay().toString() == '29/09/2013',"MovePrevWeek test");
+
+
 });
