@@ -181,6 +181,29 @@ var Calendar = (function(options){
         },
         getInitialDay:function(){return day;},
         getWeeks:function(){return weeks;},
+        setData: function(data){
+            var self = this;
+            data.each(function(){
+                self.getCalendarDay(this.date).setData(this);
+            });
+            return self;
+        },
+        getLeftData: function(){
+            var leftData = new Array();
+            weeks.each(function(){
+                var data = this.getTotalsWeek();
+                leftData.push(data.left);
+            });
+            return leftData;
+        },
+        getRightData: function(){
+            var rightData = new Array();
+            weeks.each(function(){
+                var data = this.getTotalsWeek();
+                rightData.push(data.right);
+            });
+            return rightData;
+        },
         each:function(callback){return weeks.each(callback);},
         movePrevWeek:function(){
             var tmp = new Array();
@@ -220,9 +243,8 @@ var D3Calendar = (function(container){
 
     },
     setData:function(data){
-        var self = this;
-
-        return self;
+        calendar.setData(data);
+        return this;
     },
     display:function(){
         var numWeeks = calendar.getNumWeeks(),

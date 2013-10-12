@@ -1,3 +1,37 @@
+var data=[
+        { date: '10/09/2013',
+          left: 1315,
+          right: 69.54,
+          url: 'http://gpxlog.hol.es',
+          title: 'test title'},
+        { date: '12/09/2013',
+          left: 1005,
+          right: 35.62,
+          url: 'http://gpxlog.hol.es',
+          title: 'test title'},
+        { date: '23/09/2013',
+          left: 975,
+          right: 52.3,
+          url: 'http://gpxlog.hol.es',
+          title: 'test title'},
+        { date: '28/09/2013',
+          left: 1075,
+          right: 48.54,
+          url: 'http://gpxlog.hol.es',
+          title: 'test title'},
+        { date: '02/10/2013',
+          left: 1105,
+          right: 39.54,
+          url: 'http://gpxlog.hol.es',
+          title: 'test title'},
+        { date: '05/10/2013',
+          left: 1115,
+          right: 39.54,
+          url: 'http://gpxlog.hol.es',
+          title: 'test title'},
+
+          ];
+
 test( "Week of the Year", function() {
     var oct_week = [30,1,2,3,4,5,6],
         dec_week = [31,1,2,3,4,5,6],
@@ -77,11 +111,23 @@ test( "Calendar Test", function() {
     ok(calendar.getCalendarDay('12/09/2013').toString() == '12/09/2013',"Set Day test");
     ok(calendar.getCalendarDay('08/09/2013') === undefined,"Set Day test");
 
+    calendar.setData(data);
+    ok(calendar.getCalendarDay('23/09/2013').getData().date == '23/09/2013',"Test set Data. Test Date value");
+    ok(calendar.getCalendarDay('10/09/2013').getData().left == 1315,"Test set Data. Test left value");
+    ok(calendar.getCalendarDay('02/10/2013').getData().right == 39.54,"Test set Data. Test right value");
+
+    ok(calendar.getWeeks()[0].getTotalsWeek().left == 2320,"Test Data. Total week left");
+    ok(calendar.getWeeks()[0].getTotalsWeek().right == 105.16,"Test Data. Total week right");
+
+    var leftData = [2320, 0, 2050, 2220],
+        rightData = [105.16, 0, 100.84, 79.08];
+
+    deepEqual( calendar.getLeftData(), leftData, "Left Data Weeks Calendar" );
+    deepEqual( calendar.getRightData(), rightData, "Right Data Weeks Calendar" );
+
     ok(calendar.moveNextWeek().firstDay().toString() == '16/09/2013',"MoveNextWeek test");
     ok(calendar.lastDay().toString() == '13/10/2013',"MoveNextWeek test");
 
     ok(Calendar().setDay('01/10/2013').movePrevWeek().firstDay().toString() == '02/09/2013',"MovePrevWeek test");
     ok(Calendar().setDay('01/10/2013').movePrevWeek().lastDay().toString() == '29/09/2013',"MovePrevWeek test");
-
-
 });
