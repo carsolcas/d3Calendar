@@ -27,5 +27,5 @@ $(document).ready(function(){
           title: 'test title'},
           ];
 
-    D3Calendar('d3-calendar').display();
+    D3Calendar('d3-calendar').setData(data).display();
 });

@@ -12,3 +12,12 @@
     -webkit-transition: all 0.3s;
     transition: all 0.3s;
 }
+
+rect.has-data{
+    fill:#333;
+    cursor:pointer;
+}
+
+text.has-data{
+    fill:#fff;
+}
