@@ -235,7 +235,7 @@ var D3Calendar = (function(container){
         daysOfWeek = ['L','M','X','J','V','S','D'],
         d3Canvas = d3.select("#"+container).
                       append("svg:svg").
-                      attr("width", 400).
+                      attr("width", 450).
                       attr("height", 300);
  return {
     setDay: function(y,m,d){ calendar = Calendar().setDay(y,m,d);},
@@ -262,7 +262,7 @@ var D3Calendar = (function(container){
           .attr("height", square)
           .attr("width", square)
           .attr("fill", "#BBBBBB")
-          .attr("transform", "translate(100,80)")
+          .attr("transform", "translate(150,80)")
           .attr("class", "daycell")
           ;
 
@@ -273,7 +273,7 @@ var D3Calendar = (function(container){
           .text(function(d) {return d;})
           .attr("x", function(datum, index) { return (index*(square+2))+(square/2); })
           .attr("y", yDay+15)
-          .attr("transform", "translate(100,80)")
+          .attr("transform", "translate(150,80)")
           .attr("font-size", "13px")
           .attr("text-anchor", "middle")
           .attr("fill","#666666")
@@ -294,7 +294,7 @@ var D3Calendar = (function(container){
               .attr("height", square)
               .attr("width", square)
               .attr("fill", "#F6F6F6")
-              .attr("transform", "translate(100,100)")
+              .attr("transform", "translate(150,100)")
               .attr("class","daycell")
               .classed("has-data",function(d){ return (d.getData() ) ? "True" : "";})
               .on('click',function(d){
@@ -303,7 +303,7 @@ var D3Calendar = (function(container){
               ;
         });
 
-        //TEXT
+        //text
         weeks.each(function(i){
             var yDay = (i * (square+2)),
                 days = this.getWeekDays();
@@ -314,7 +314,7 @@ var D3Calendar = (function(container){
               .text(function(d) {return d.getDay();})
               .attr("x", function(datum, index) { return (index * (square + 2)) + (square / 2); })
               .attr("y", yDay + 15)
-              .attr("transform", "translate(100,100)")
+              .attr("transform", "translate(150,100)")
               .attr("font-size", "12px")
               .attr("text-anchor", "middle")
               .attr("fill","#666666")
@@ -322,6 +322,87 @@ var D3Calendar = (function(container){
               .classed("has-data",function(d){ return (d.getData() ) ? "True" : "";})
               ;
         });
+
+        //BARS
+        var rightData = calendar.getRightData(),
+            leftData = calendar.getLeftData(),
+            scalaRight = d3.scale.linear(),
+            scalaLeft = d3.scale.linear();
+
+        //Right Bars
+        scalaRight
+            .range([0,75])
+            .domain([0, d3.max(rightData, function(d) { return d; })]);
+
+        d3Canvas.selectAll("bar-right")
+              .data(rightData)
+              .enter()
+              .append("svg:rect")
+              .attr("x", 0)
+              .attr("y", function(datum, index) { return (index*(square+2))+1; })
+              .attr("height", square-3)
+              .attr("width", function(datum, index) { return scalaRight(datum); })
+              .attr("fill", "#4D90FE")
+              .attr("transform", "translate(307,100)")
+              .on('click',function(d){
+                    console.log(d);
+                  })
+              ;
+
+        d3Canvas.selectAll("text-right")
+              .data(rightData)
+              .enter()
+              .append("text")
+              .text(function(d) {return d + ' km.';})
+              .attr("x", function(datum, index) { return scalaRight(datum) + 5; })
+              .attr("y", function(datum, index) { return (index*(square+2))+13; })
+              .attr("fill", "#000")
+              .attr("font-size", "12px")
+              .attr("text-anchor", "left")
+              .attr("transform", "translate(307,100)")
+              .style("pointer-events", "none")
+              .on('click',function(d){
+                    console.log(d);
+                  })
+              ;
+
+
+        //Left Bars
+        scalaRight
+            .range([0,75])
+            .domain([0, d3.max(leftData, function(d) { return d; })]);
+
+        d3Canvas.selectAll("bar-left")
+              .data(leftData)
+              .enter()
+              .append("svg:rect")
+              .attr("x", function(datum, index) { return -1 * scalaRight(datum); })
+              .attr("y", function(datum, index) { return (index*(square+2))+1; })
+              .attr("height", square-3)
+              .attr("width", function(datum, index) { return scalaRight(datum); })
+              .attr("fill", "#4DFF00")
+              .attr("transform", "translate(145,100)")
+              .on('click',function(d){
+                    console.log(d);
+                  })
+              ;
+
+        d3Canvas.selectAll("text-left")
+              .data(leftData)
+              .enter()
+              .append("text")
+              .text(function(d) {return d + ' m.';})
+              .attr("x", function(datum, index) { return -1 * scalaRight(datum) - 5; })
+              .attr("y", function(datum, index) { return (index*(square+2))+13; })
+              .attr("fill", "#000")
+              .attr("font-size", "12px")
+              .attr("text-anchor", "end")
+              .attr("transform", "translate(145,100)")
+              .style("pointer-events", "none")
+              .on('click',function(d){
+                    console.log(d);
+                  })
+              ;
     }
  };
 });
