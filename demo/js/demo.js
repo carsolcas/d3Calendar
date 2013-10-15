@@ -35,6 +35,20 @@ $(document).ready(function(){
           rightUnits:'km.',
           url: 'http://gpxlog.hol.es',
           title: 'test title'},
+        { date: '16/10/2013',
+          left: 1715,
+          right: 75.54,
+          leftUnits:'m.',
+          rightUnits:'km.',
+          url: 'http://gpxlog.hol.es',
+          title: 'test title'},
+        { date: '19/10/2013',
+          left: 115,
+          right: 55.54,
+          leftUnits:'m.',
+          rightUnits:'km.',
+          url: 'http://gpxlog.hol.es',
+          title: 'test title'},
           ];
 
     D3Calendar('d3-calendar').setData(data).display();

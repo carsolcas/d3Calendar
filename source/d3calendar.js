@@ -334,38 +334,40 @@ var D3Calendar = (function(container){
             .range([0,75])
             .domain([0, d3.max(rightData, function(d) { return d; })]);
 
-        d3Canvas.selectAll("bar-right")
-              .data(rightData)
-              .enter()
-              .append("svg:rect")
-              .attr("x", 0)
-              .attr("y", function(datum, index) { return (index*(square+2))+1; })
-              .attr("height", square-3)
-              .attr("width", function(datum, index) { return scalaRight(datum); })
-              .attr("fill", "#4D90FE")
-              .attr("transform", "translate(307,100)")
-              .on('click',function(d){
-                    console.log(d);
-                  })
-              ;
-
         d3Canvas.selectAll("text-right")
               .data(rightData)
               .enter()
               .append("text")
+              .attr("x", 300)
+              .attr("y", function(datum, index) { return (index*(square+2))+113; })
+              .transition()
+              .duration(1500)
+              .ease("linear")
+              .attr("transform", "translate(307,100)")
               .text(function(d) {return d + ' km.';})
               .attr("x", function(datum, index) { return scalaRight(datum) + 5; })
               .attr("y", function(datum, index) { return (index*(square+2))+13; })
               .attr("fill", "#000")
               .attr("font-size", "12px")
               .attr("text-anchor", "left")
-              .attr("transform", "translate(307,100)")
               .style("pointer-events", "none")
-              .on('click',function(d){
-                    console.log(d);
-                  })
               ;
 
+        d3Canvas.selectAll("bar-right")
+              .data(rightData)
+              .enter()
+              .append("svg:rect")
+              .attr("transform", "translate(307,100)")
+              .attr("width", 0)
+              .attr("fill", "#4D90FE")
+              .transition()
+              .duration(2000)
+              .ease("linear")
+              .attr("x", 0)
+              .attr("y", function(datum, index) { return (index*(square+2))+1; })
+              .attr("height", square-3)
+              .attr("width", function(datum, index) { return scalaRight(datum); })
+              ;
 
         //Left Bars
         scalaRight
@@ -376,15 +378,18 @@ var D3Calendar = (function(container){
               .data(leftData)
               .enter()
               .append("svg:rect")
+              .attr("transform", "translate(145,100)")
+              .attr("fill", "#4DFF00")
+              .attr("x", 0)
+              .attr("width", 0)
+              .transition(-1)
+              .duration(2000)
+              .ease("linear")
               .attr("x", function(datum, index) { return -1 * scalaRight(datum); })
               .attr("y", function(datum, index) { return (index*(square+2))+1; })
               .attr("height", square-3)
               .attr("width", function(datum, index) { return scalaRight(datum); })
-              .attr("fill", "#4DFF00")
-              .attr("transform", "translate(145,100)")
-              .on('click',function(d){
-                    console.log(d);
-                  })
+
               ;
 
         d3Canvas.selectAll("text-left")
@@ -392,16 +397,17 @@ var D3Calendar = (function(container){
               .enter()
               .append("text")
               .text(function(d) {return d + ' m.';})
+              .attr("transform", "translate(145,100)")
+              .attr("x", 0)
+              .transition()
+              .duration(1500)
+              .ease("linear")
               .attr("x", function(datum, index) { return -1 * scalaRight(datum) - 5; })
               .attr("y", function(datum, index) { return (index*(square+2))+13; })
               .attr("fill", "#000")
               .attr("font-size", "12px")
               .attr("text-anchor", "end")
-              .attr("transform", "translate(145,100)")
               .style("pointer-events", "none")
-              .on('click',function(d){
-                    console.log(d);
-                  })
               ;
     }
  };
