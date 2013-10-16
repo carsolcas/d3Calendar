@@ -3,7 +3,7 @@ var data=[
           left: 1315,
           right: 69.54,
           url: 'http://gpxlog.hol.es',
-          title: 'test title'},
+          title: 'test title for '},
         { date: '12/09/2013',
           left: 1005,
           right: 35.62,

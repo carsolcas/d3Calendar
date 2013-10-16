@@ -14,6 +14,12 @@ if (!Array.prototype.each){
     }
 }
 
+if (!Number.prototype.format){
+    Number.prototype.format = function() {
+        return this.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
+    };
+}
+
 var Day = (function(y,m,d){
     var day = 0,
         data;
@@ -233,6 +239,9 @@ var Calendar = (function(options){
 var D3Calendar = (function(container){
     var calendar = Calendar(),
         daysOfWeek = ['L','M','X','J','V','S','D'],
+        div = d3.select("#"+container).append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
         d3Canvas = d3.select("#"+container).
                       append("svg:svg").
                       attr("width", 450).
@@ -296,11 +305,29 @@ var D3Calendar = (function(container){
               .attr("fill", "#F6F6F6")
               .attr("transform", "translate(150,100)")
               .attr("class","daycell")
+              .attr("title",function(d){ return (d.getData() ) ? d.getData().title : "";})
               .classed("has-data",function(d){ return (d.getData() ) ? "True" : "";})
               .on('click',function(d){
-                    console.log(d.getDay());
+                    var data = d.getData();
+                    if (data) location.href = data.url;
                   })
-              ;
+              .on("mouseover", function(d) {
+                var data = d.getData(),
+                    yOffset = this.transform.animVal.getItem('y').matrix.f,
+                    xOffset = this.transform.animVal.getItem('y').matrix.e;
+                if (! data) return;
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html(data.title)
+                    .style("left", (xOffset + this.x.animVal.value) + "px")
+                    .style("top", (yOffset + this.y.animVal.value - square) + "px");
+              })
+              .on("mouseout", function(d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
         });
 
         //text
@@ -344,7 +371,7 @@ var D3Calendar = (function(container){
               .duration(1500)
               .ease("linear")
               .attr("transform", "translate(307,100)")
-              .text(function(d) {return d + ' km.';})
+              .text(function(d) {return d.format() + ' km.';})
               .attr("x", function(datum, index) { return scalaRight(datum) + 5; })
               .attr("y", function(datum, index) { return (index*(square+2))+13; })
               .attr("fill", "#000")
@@ -396,7 +423,7 @@ var D3Calendar = (function(container){
               .data(leftData)
               .enter()
               .append("text")
-              .text(function(d) {return d + ' m.';})
+              .text(function(d) {return d.format() + ' m.';})
               .attr("transform", "translate(145,100)")
               .attr("x", 0)
               .transition()
