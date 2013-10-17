@@ -318,10 +318,10 @@ var D3Calendar = (function(container){
                 if (! data) return;
                 div.transition()
                     .duration(200)
-                    .style("opacity", .9);
-                div.html(data.title)
-                    .style("left", (xOffset + this.x.animVal.value) + "px")
-                    .style("top", (yOffset + this.y.animVal.value - square) + "px");
+                    .style("opacity", 1);
+                div.html(data.title+'<br/>'+data.left+' '+data.leftUnits)
+                    .style("left", (xOffset + this.x.animVal.value)-(square/2) + "px")
+                    .style("top", (yOffset + this.y.animVal.value - (square+square)) -6 + "px");
               })
               .on("mouseout", function(d) {
                     div.transition()

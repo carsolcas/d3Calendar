@@ -30,8 +30,20 @@ div.tooltip {
   text-align: center;
   padding: 5px;
   font: 12px sans-serif;
-  background: lightsteelblue;
+  background: lightblue;
   border: 0px;
   border-radius: 8px;
   pointer-events: none;
+}
+
+div.tooltip:after {
+position: absolute;
+min-height:38px;
+top: 38px;
+left: 10px;
+display: inline-block;
+border-right: 8px solid transparent;
+border-top: 8px solid lightblue;
+border-left: 8px solid transparent;
+content: '';
 }
