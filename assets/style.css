@@ -21,9 +21,7 @@ rect.has-data{
     cursor:pointer;
 }
 
-text.has-data{
-    fill:#fff;
-}
+text.has-data{fill:#fff;}
 
 div.tooltip {
   position: absolute;
@@ -37,13 +35,12 @@ div.tooltip {
 }
 
 div.tooltip:after {
-position: absolute;
-min-height:38px;
-top: 38px;
-left: 10px;
-display: inline-block;
-border-right: 8px solid transparent;
-border-top: 8px solid lightblue;
-border-left: 8px solid transparent;
-content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 10px;
+    display: inline-block;
+    border-right: 8px solid transparent;
+    border-top: 8px solid lightblue;
+    border-left: 8px solid transparent;
+    content: '';
 }
