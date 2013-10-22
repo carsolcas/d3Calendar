@@ -190,7 +190,8 @@ var Calendar = (function(options){
         setData: function(data){
             var self = this;
             data.each(function(){
-                self.getCalendarDay(this.date).setData(this);
+                var day = self.getCalendarDay(this.date);
+                if (day) day.setData(this)
             });
             return self;
         },
@@ -247,7 +248,7 @@ var D3Calendar = (function(container){
                       attr("width", 450).
                       attr("height", 300);
  return {
-    setDay: function(y,m,d){ calendar = Calendar().setDay(y,m,d);},
+    setDay: function(y,m,d){ calendar = Calendar().setDay(y,m,d); return this;},
     getDay: function(y,m,d){
 
     },
@@ -314,14 +315,16 @@ var D3Calendar = (function(container){
               .on("mouseover", function(d) {
                 var data = d.getData(),
                     yOffset = this.transform.animVal.getItem('y').matrix.f,
-                    xOffset = this.transform.animVal.getItem('y').matrix.e;
-                if (! data) return;
+                    xOffset = this.transform.animVal.getItem('y').matrix.e,
+                    $div = $(div[0]),
+                    html = (data) ? data.title+'<br/>'+data.left+' '+data.leftUnits+' '+data.right+' '+data.rightUnits : d.toString();
+
                 div.transition()
                     .duration(200)
                     .style("opacity", 1);
-                div.html(data.title+'<br/>'+data.left+' '+data.leftUnits)
-                    .style("left", (xOffset + this.x.animVal.value)-(square/2) + "px")
-                    .style("top", (yOffset + this.y.animVal.value - (square+square)) -6 + "px");
+                div.html(html);
+                div.style("left", (xOffset + this.x.animVal.value)-(square/2) + "px")
+                    .style("top", (yOffset + this.y.animVal.value - square/2 - $div.height()) -8  + "px");
               })
               .on("mouseout", function(d) {
                     div.transition()

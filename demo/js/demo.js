@@ -1,13 +1,13 @@
 $(document).ready(function(){
     var data=[
-        { date: '23/09/2013',
+        { date: '21/10/2013',
           left: 975,
           right: 52.3,
           leftUnits:'m.',
           rightUnits:'km.',
           url: 'http://gpxlog.hol.es',
           title: 'test title for 10/09/2013'},
-        { date: '28/09/2013',
+        { date: '01/10/2013',
           left: 1075,
           right: 48.54,
           leftUnits:'m.',
@@ -51,5 +51,5 @@ $(document).ready(function(){
           title: 'test title'},
           ];
 
-    D3Calendar('d3-calendar').setData(data).display();
+    D3Calendar('d3-calendar').setDay('22/10/2013').setData(data).display();
 });
