@@ -237,26 +237,35 @@ var Calendar = (function(options){
 });
 
 
-var D3Calendar = (function(container){
-    var calendar = Calendar(),
-        daysOfWeek = ['L','M','X','J','V','S','D'],
+
+
+
+var D3Calendar = (function(container, options){
+    var defaults = {
+            daysOfWeek: ['L','M','X','J','V','S','D'],
+            dayFormat: 'dd/mm/yyyy'
+        },
+        opt = {},
+        calendar,
+        //###Create the tooltip div
         div = d3.select("#"+container).append("div")
             .attr("class", "tooltip")
-            .style("opacity", 0);
+            .style("opacity", 0),
+        //###Create the svg canvas
         d3Canvas = d3.select("#"+container).
                       append("svg:svg").
                       attr("width", 460).
                       attr("height", 300);
- return {
-    setDay: function(y,m,d){ calendar = Calendar().setDay(y,m,d); return this;},
-    getDay: function(y,m,d){
 
-    },
-    setData:function(data){
-        calendar.setData(data);
-        return this;
-    },
-    display:function(){
+        $.extend(opt, defaults, options);
+        calendar = Calendar(opt);
+
+    var _setDay = function(y,m,d){ calendar = Calendar().setDay(y,m,d); return this;},
+        _setData = function(data){
+                    calendar.setData(data);
+                    return this;
+                },
+        _display = function (){
         var numWeeks = calendar.getNumWeeks(),
             weeks = calendar.getWeeks(),
             square = 20;
@@ -264,7 +273,7 @@ var D3Calendar = (function(container){
         //Header weekdays
         var yDay = 0
         d3Canvas.selectAll("headerWeek")
-          .data(daysOfWeek)
+          .data(opt.daysOfWeek)
           .enter()
           .append("svg:rect")
           .attr("x", function(datum, index) { return (index*(square+2)); })
@@ -277,7 +286,7 @@ var D3Calendar = (function(container){
           ;
 
         d3Canvas.selectAll("textH")
-          .data(daysOfWeek)
+          .data(opt.daysOfWeek)
           .enter()
           .append("text")
           .text(function(d) {return d;})
@@ -439,6 +448,12 @@ var D3Calendar = (function(container){
               .attr("text-anchor", "end")
               .style("pointer-events", "none")
               ;
-    }
+        return this;
+    };
+ return {
+    setDay: _setDay,
+    getDay: function(y,m,d){},
+    setData: _setData,
+    display: _display
  };
 });
