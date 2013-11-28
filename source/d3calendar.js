@@ -91,7 +91,7 @@ var Day = (function(y,m,d){
         isLowerThan:function(d){return (!this.isEqual(d) &&  this.getDate() < d.getDate()); },
         getDaysTo: function(d){ return (d.getDate() - this.getDate()) / (86400000) },
         getWeekOfYear:getWeekOfYear,
-        add:function(days){  //Add days to atual day. Negative numbers allowed to past days. Return new instance Day
+        add:function(days){  //Add days to atual day. Negative numbers allowed past days. Return new instance Day
             return Day(this.getYear(), this.getMonth(), this.getDay()+days);
         },
         toString:function(){return lpad(this.getDay(),2)+'/'+lpad(this.getMonth(),2)+'/'+this.getYear();},
@@ -245,7 +245,7 @@ var D3Calendar = (function(container){
             .style("opacity", 0);
         d3Canvas = d3.select("#"+container).
                       append("svg:svg").
-                      attr("width", 450).
+                      attr("width", 460).
                       attr("height", 300);
  return {
     setDay: function(y,m,d){ calendar = Calendar().setDay(y,m,d); return this;},
