@@ -50,6 +50,6 @@ $(document).ready(function(){
           url: 'http://gpxlog.hol.es',
           title: 'test title'},
           ];
-
-    D3Calendar('d3-calendar').setDay('22/10/2013').setData(data).display();
+    var calendar = D3Calendar('d3-calendar',{daysOfWeek: ['A','B','C','D','E','F','G'],});
+    calendar.setDay('22/10/2013').setData(data).display();
 });
