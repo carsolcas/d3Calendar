@@ -35,7 +35,9 @@ var data=[
 test( "Week of the Year", function() {
     var oct_week = [30,1,2,3,4,5,6],
         dec_week = [31,1,2,3,4,5,6],
-        jul_week = [29,30,31,1,2,3,4];
+        jul_week = [29,30,31,1,2,3,4],
+        Week = D3Calendar().Week,
+        Day = D3Calendar().Day;
 
     deepEqual( Week(2013,10,1).getDays(), oct_week, "October 2013. Three params!" );
     deepEqual( Week(2012,12,31).getDays(), dec_week, "December 2012. Three params!" );
@@ -61,6 +63,7 @@ test( "Week of the Year", function() {
 });
 
 test( "Days Test", function() {
+    var Day = D3Calendar().Day;
     ok(Day('01/01/2013').getWeekOfYear() == 1, "First week of year");
     ok(Day('01/10/2013').getWeekOfYear() == 40, "40 week of year");
     ok(Day('12/09/2013').getWeekOfYear() == 37, "37 week of year");
@@ -102,9 +105,10 @@ test( "Days Test", function() {
 
 
 test( "Calendar Test", function() {
-    var calendar = Calendar().setDay('01/10/2013');
+    var Calendar = D3Calendar().Calendar,
+        calendar = Calendar().setDay('01/10/2013');
     ok(Calendar().getNumWeeks() == 4, "Default config");
-    ok(Calendar({numWeeks:5}).getNumWeeks() == 5, "Parameter Config");
+    ok(D3Calendar({numWeeks:5}).Calendar().getNumWeeks() == 5, "Parameter Config");
     ok(calendar.firstDay().toString() == '09/09/2013',"Set Day test");
     ok(calendar.lastDay().toString() == '06/10/2013',"Set Day test");
 

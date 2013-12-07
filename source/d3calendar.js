@@ -22,6 +22,10 @@ if (!Number.prototype.format){
 
 
 var D3Calendar = function(container, options){
+    if (typeof container === 'object'){
+        options = container;
+        container = '';
+    }
     var defaults = {
             daysOfWeek: ['L','M','X','J','V','S','D'],
             dayFormat: 'dd/mm/yyyy',
@@ -33,7 +37,7 @@ var D3Calendar = function(container, options){
         $.extend(settings, defaults, options);
 
     //~ DAY *******************************************************************
-    var Day = (function(y,m,d){
+    var _Day = (function(y,m,d){
         var day = 0,
             data;
 
@@ -105,7 +109,7 @@ var D3Calendar = function(container, options){
             getDaysTo: function(d){ return (d.getDate() - this.getDate()) / (86400000) },
             getWeekOfYear:getWeekOfYear,
             add:function(days){  //Add days to atual day. Negative numbers allowed past days. Return new instance Day
-                return Day(this.getYear(), this.getMonth(), this.getDay()+days);
+                return _Day(this.getYear(), this.getMonth(), this.getDay()+days);
             },
             toString:function(){return lpad(this.getDay(),2)+'/'+lpad(this.getMonth(),2)+'/'+this.getYear();},
             toURI:function(){return encodeURIComponent(this.getYear()+'-'+lpad(this.getMonth(),2)+'-'+lpad(this.getDay(),2));}
@@ -113,12 +117,12 @@ var D3Calendar = function(container, options){
     });
 
     //~  WEEK *****************************************************************
-    var Week = (function(y,m,d){
+    var _Week = (function(y,m,d){
         var day = 0,
             week = [],
             numWeek = 0;
 
-        day = (typeof y === 'object') ? y : Day(y,m,d);
+        day = (typeof y === 'object') ? y : _Day(y,m,d);
 
         var dayOfWeek = day.getDayOfWeek();
         for (var i=1; i<=7; i++){
@@ -163,16 +167,16 @@ var D3Calendar = function(container, options){
     });
 
     //~ CALENDAR **************************************************************
-    var Calendar = (function(){
+    var _Calendar = (function(){
         var weeks = new Array(),
-            day = Day();
+            day = _Day();
 
             function _calculateWeeks(){
                 weeks = new Array();
                 var year = day.getYear(),
                     nw = day.getWeekOfYear();
                 for (var i=0; i< settings.numWeeks; i++){
-                    weeks.push(Week(year,nw-i));
+                    weeks.push(_Week(year,nw-i));
                 }
                 weeks.reverse();
             }
@@ -181,9 +185,9 @@ var D3Calendar = function(container, options){
 
      return {
             getNumWeeks:function(){return settings.numWeeks;},
-            setDay:function(y,m,d){ day = Day(y,m,d); _calculateWeeks(); return this;},
+            setDay:function(y,m,d){ day = _Day(y,m,d); _calculateWeeks(); return this;},
             getCalendarDay:function(y,m,d){
-                var day = Day(y,m,d);
+                var day = _Day(y,m,d);
                 for (var i=0; i<weeks.length; i++){
                     if (weeks[i].hasDay(day)){
                         var offset = weeks[i].firstDay().getDaysTo(day);
@@ -221,13 +225,13 @@ var D3Calendar = function(container, options){
             each:function(callback){return weeks.each(callback);},
             movePrevWeek:function(){
                 var tmp = new Array();
-                tmp.push(Week(this.firstDay().add(-7)));
+                tmp.push(_Week(this.firstDay().add(-7)));
                 weeks = tmp.concat(weeks.slice(0,-1));
                 return this;
             },
             moveNextWeek:function(){
                 weeks = weeks.slice(1);
-                weeks.push(Week(this.lastDay().add(7)));
+                weeks.push(_Week(this.lastDay().add(7)));
 
                 return this;
             },
@@ -243,13 +247,15 @@ var D3Calendar = function(container, options){
         };
     });
 
-    calendar = Calendar();
-    var _setDay = function(y,m,d){ calendar = Calendar().setDay(y,m,d); return this;},
+    calendar = _Calendar();
+    var _setDay = function(y,m,d){ calendar = _Calendar().setDay(y,m,d); return this;},
         _setData = function(data){
                     calendar.setData(data);
                     return this;
                 },
         _setContainer = function(container){
+            if (!container) return this;
+
             //###Create the tooltip div
             div = d3.select("#"+container).append("div")
                 .attr("class", "tooltip")
@@ -452,6 +458,9 @@ var D3Calendar = function(container, options){
         getDay: function(y,m,d){},
         setData: _setData,
         setContainer: _setContainer,
-        display: _display
+        display: _display,
+        Day: _Day,
+        Week: _Week,
+        Calendar: _Calendar
      };
 }
