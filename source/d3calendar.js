@@ -25,11 +25,12 @@ var D3Calendar = function(container, options){
     var defaults = {
             daysOfWeek: ['L','M','X','J','V','S','D'],
             dayFormat: 'dd/mm/yyyy',
-            fristDay: 1 //Monday
+            firstDayOfWeek: 1, //Monday
+            numWeeks: 4
         },
-        opt = {},
+        settings = {},
         calendar;
-        $.extend(opt, defaults, options);
+        $.extend(settings, defaults, options);
 
     //~ DAY *******************************************************************
     var Day = (function(y,m,d){
@@ -162,15 +163,9 @@ var D3Calendar = function(container, options){
     });
 
     //~ CALENDAR **************************************************************
-    var Calendar = (function(options){
-        var defaults = {
-                numWeeks: 4,
-                firstDayOfWeek: 'M'
-            },
-            settings = {},
-            weeks = new Array(),
+    var Calendar = (function(){
+        var weeks = new Array(),
             day = Day();
-            $.extend(settings, defaults, options);
 
             function _calculateWeeks(){
                 weeks = new Array();
@@ -248,7 +243,7 @@ var D3Calendar = function(container, options){
         };
     });
 
-    calendar = Calendar(opt);
+    calendar = Calendar();
     var _setDay = function(y,m,d){ calendar = Calendar().setDay(y,m,d); return this;},
         _setData = function(data){
                     calendar.setData(data);
@@ -274,7 +269,7 @@ var D3Calendar = function(container, options){
             //Header weekdays
             var yDay = 0
             d3Canvas.selectAll("headerWeek")
-              .data(opt.daysOfWeek)
+              .data(settings.daysOfWeek)
               .enter()
               .append("svg:rect")
               .attr("x", function(datum, index) { return (index*(square+2)); })
@@ -287,7 +282,7 @@ var D3Calendar = function(container, options){
               ;
 
             d3Canvas.selectAll("textH")
-              .data(opt.daysOfWeek)
+              .data(settings.daysOfWeek)
               .enter()
               .append("text")
               .text(function(d) {return d;})
