@@ -39,7 +39,37 @@ var D3Calendar = function(container, options){
     //~ DAY *******************************************************************
     var _Day = (function(y,m,d){
         var day = 0,
-            data;
+            data,
+            _getDay = function(){return day.getDate();},
+            _getMonth = function(){return day.getMonth()+1;},
+            _getYear = function(){return day.getFullYear();},
+            _getDayOfWeek = function(){return (day.getDay() == 0) ? 7 : day.getDay();},
+            _lpad = function(num, width, char) {
+              char = char || '0';
+              num = num + '';
+              return num.length >= width ? num : new Array(width - num.length + 1).join(char) + num;
+            },
+            _toString = function (format){
+                format = format || settings.dayFormat;
+                return format.replace(/dd?|mm?|yy?y?y?/g, function(format){
+                    switch(format){
+                        case "d":
+                            return _getDay();
+                        case "dd":
+                            return _lpad(_getDay(), 2);
+                        case "m":
+                            return _getMonth();
+                        case "mm":
+                            return _lpad(_getMonth(), 2);
+                        case "yy":
+                            return _getYear().toString().substring(2, 4);
+                        case "yyyy":
+                            return _getYear();
+                    }
+                });
+            },
+            _toURI = function(){return encodeURIComponent(_toString('yyyy-mm-dd'));}
+            ;
 
         //no params --> today
         if (y == undefined) day = new Date();
@@ -57,20 +87,14 @@ var D3Calendar = function(container, options){
         //normal parameters
         else day = new Date(y, m-1, d);
 
-        function lpad(num, width, char) {
-          char = char || '0';
-          num = num + '';
-          return num.length >= width ? num : new Array(width - num.length + 1).join(char) + num;
-        }
-
         function getWeekOfYear(){
-                var month = day.getMonth(),
-                    _y = (month == 0 || month == 1) ? day.getFullYear()-1 : day.getFullYear(),
+                var month = _getMonth()-1,
+                    _y = (month == 0 || month == 1) ? _getYear()-1 : _getYear(),
                     _b = Math.floor(_y/4)-Math.floor(_y/100)+Math.floor(_y/400),
                     _c = Math.floor((_y-1)/4)-Math.floor((_y-1)/100)+Math.floor((_y-1)/400),
                     _s = _b - _c,
                     _e = (month == 0 || month == 1) ? 0 : _s+1,
-                    _f = (month == 0 || month == 1) ? (day.getDate()-1 + (31 * month)) : day.getDate()+Math.floor(((153*(day.getMonth()-2))+2)/5)+58+_s;
+                    _f = (month == 0 || month == 1) ? (_getDay()-1 + (31 * month)) : _getDay()+Math.floor(((153*(_getMonth()-3))+2)/5)+58+_s;
 
                var _g = (_y + _b)%7,
                    _d = (_f + _g - _e)%7,
@@ -88,11 +112,12 @@ var D3Calendar = function(container, options){
 
         return{
             getDate:function(){return day;},  //Return Date object
-            getDay:function(){return day.getDate();},
-            getMonth:function(){return day.getMonth()+1;},
-            getYear:function(){return day.getFullYear();},
-            getDayOfWeek:function(){return (day.getDay() == 0) ? 7 : day.getDay();},
+            getDay: _getDay,
+            getMonth: _getMonth,
+            getYear: _getYear,
             getData: function(){ return data;},
+            getDayOfWeek: _getDayOfWeek,
+
             setData: function(d){
                 if (data === undefined) data = d;
                 else{
@@ -111,8 +136,8 @@ var D3Calendar = function(container, options){
             add:function(days){  //Add days to atual day. Negative numbers allowed past days. Return new instance Day
                 return _Day(this.getYear(), this.getMonth(), this.getDay()+days);
             },
-            toString:function(){return lpad(this.getDay(),2)+'/'+lpad(this.getMonth(),2)+'/'+this.getYear();},
-            toURI:function(){return encodeURIComponent(this.getYear()+'-'+lpad(this.getMonth(),2)+'-'+lpad(this.getDay(),2));}
+            toString: _toString,
+            toURI: _toURI
         }
     });
 

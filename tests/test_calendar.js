@@ -135,3 +135,12 @@ test( "Calendar Test", function() {
     ok(Calendar().setDay('01/10/2013').movePrevWeek().firstDay().toString() == '02/09/2013',"MovePrevWeek test");
     ok(Calendar().setDay('01/10/2013').movePrevWeek().lastDay().toString() == '29/09/2013',"MovePrevWeek test");
 });
+
+test( "Day Format Test", function() {
+    var Day = D3Calendar('',{dayFormat: 'yyyy-mm-dd'}).Day;
+    ok(Day('01/01/2013').toString() == '2013-01-01',"Format day: yyyy-mm-dd");
+    ok(Day('01/01/2013').toURI() == '2013-01-01',"toUri with Format day: yyyy-mm-dd");
+    Day = D3Calendar('',{dayFormat: 'd-m-yy'}).Day;
+    ok(Day('01/01/2013').toString() == '1-1-13',"Format day: d-m-yy");
+    ok(Day('01/01/2013').toURI() == '2013-01-01',"toUri with Format day: d-m-yy");
+});
